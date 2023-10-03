@@ -20,7 +20,7 @@ const jwtSecret = process.env.SERVER_SECRET_KEY;
 // Middleware para autenticar o token JWT
 function verifyToken(socket, next) {
 	const token = socket && socket.handshake?.auth?.token;
-	console.log(socket);
+
 	if (!token) {
 		return next && next(new Error("Token JWT ausente"));
 	}
@@ -33,7 +33,7 @@ function verifyToken(socket, next) {
 app.use("/", indexRoute);
 const auth = verifyToken();
 io.use(verifyToken);
-console.log(auth);
+
 io.on("connection", (socket) => {
 	console.log("Cliente conectado via Socket.IO");
 
