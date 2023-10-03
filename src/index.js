@@ -36,15 +36,18 @@ app.use("/", indexRoute);
 io.use(verifyToken);
 
 io.on("connection", (socket) => {
-	const auth = verifyToken(socket);
 	console.log("Cliente conectado via Socket.IO");
-	console.log(auth);
+	console.log(socket.client.id);
+	socket.on("disconnect", () => {
+		console.log(socket.client.id, "Desconectado");
+	});
 	socket.on("subscribeToMqtt", (topic) => {
 		console.log(`Cliente inscrito no tópico MQTT: ${topic}`);
 		mqttClient.subscribe(topic);
 	});
 
 	mqttClient.on("message", (mqttTopic, message) => {
+		console.log(message);
 		io.emit("mqttMessage", { message: message.toString() });
 	});
 });
