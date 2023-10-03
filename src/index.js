@@ -22,21 +22,23 @@ function verifyToken(socket, next) {
 	const token = socket && socket.handshake?.auth?.token;
 
 	if (!token) {
-		return next && next(new Error("Token JWT ausente"));
+		return next && next(new Error("Token Inexistente"));
 	}
-	try {
-		return jwt.verify(token, jwtSecret);
-	} catch (err) {
+
+	if (token === jwtSecret) {
 		return next && next();
+	} else {
+		return next && next(new Error("Token invalido"));
 	}
 }
 app.use("/", indexRoute);
-const auth = verifyToken();
+
 io.use(verifyToken);
 
 io.on("connection", (socket) => {
+	const auth = verifyToken(socket);
 	console.log("Cliente conectado via Socket.IO");
-
+	console.log(auth);
 	socket.on("subscribeToMqtt", (topic) => {
 		console.log(`Cliente inscrito no tópico MQTT: ${topic}`);
 		mqttClient.subscribe(topic);

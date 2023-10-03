@@ -20,7 +20,7 @@ function verifyToken(req, next) {
 	}
 }
 
-router.get("/api", (req, res, next) => {
+router.get("/api/equipamentos", (req, res, next) => {
 	const verify = verifyToken(req, next);
 	const table = req.query.table;
 	const where = req.query.filter && `WHERE ${req.query.filter}`;
@@ -28,7 +28,7 @@ router.get("/api", (req, res, next) => {
 	const orderBy = order[0];
 	const orderDirection = order[1];
 	const OrderByDirection = ` ORDER BY ${orderBy} ${orderDirection.toUpperCase()}`;
-	console.log(req.query);
+
 	if (verify) {
 		pool.query(
 			"SELECT * FROM " + table + " pv " + where + "" + OrderByDirection + "",
@@ -41,22 +41,6 @@ router.get("/api", (req, res, next) => {
 				}
 			}
 		);
-		// pool.query(`SELECT *  FROM ${table} pv ${where}`, (err, results) => {
-		// 	if (err) {
-		// 		console.error("Erro ao executar a consulta:", err);
-		// 		res.status(500).send("Erro ao consultar o banco de dados");
-		// 	} else {
-		// 		res.json(results);
-		// 	}
-		// });
-		// pool.query("show tables", (err, results) => {
-		// 	if (err) {
-		// 		console.error("Erro ao executar a consulta:", err);
-		// 		res.status(500).send("Erro ao consultar o banco de dados");
-		// 	} else {
-		// 		res.json(results);
-		// 	}
-		// });
 	} else {
 		res.json({
 			error: "Acesso não permitido, credenciais inválidads",
