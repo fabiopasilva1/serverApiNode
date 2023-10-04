@@ -16,27 +16,33 @@ const mqttConfig = {
 };
 const mqttClient = mqtt.connect(`mqtt://${mqttBrocker}`, mqttConfig);
 const jwtSecret = process.env.SERVER_SECRET_KEY;
+
 // Middleware para autenticar o token JWT
-// Middleware para autenticar o token JWT
-function verifyToken(socket, next) {
-	const token = socket && socket.handshake?.auth?.token;
+const authenticateJWT = (socket, next) => {
+	const token = socket.handshake.auth.token;
 
 	if (!token) {
-		return next && next(new Error("Token Inexistente"));
+		return next(new Error("Token JWT ausente"));
 	}
 
-	if (token === jwtSecret) {
-		return next && next();
-	} else {
-		return next && next(new Error("Token invalido"));
-	}
-}
+	jwt.verify(token, jwtSecret, (err, decoded) => {
+		if (err) {
+			return next(new Error("Falha na autenticação JWT"));
+		}
+
+		// Adicione dados do usuário decodificado ao objeto do socket para uso posterior, se necessário
+		socket.decoded = decoded;
+		next();
+	});
+};
+
+// Middleware para autenticar o socket
+io.use(authenticateJWT);
 app.use("/", indexRoute);
-
-io.use(verifyToken);
 
 io.on("connection", (socket) => {
 	console.log("Cliente conectado via Socket.IO");
+	socket.emit("authenticated");
 	console.log(socket.client.id);
 	socket.on("disconnect", () => {
 		console.log(socket.client.id, "Desconectado");
@@ -47,7 +53,6 @@ io.on("connection", (socket) => {
 	});
 
 	mqttClient.on("message", (mqttTopic, message) => {
-		console.log(message);
 		io.emit("mqttMessage", { message: message.toString() });
 	});
 });
@@ -55,3 +60,5 @@ io.on("connection", (socket) => {
 server.listen(port, () => {
 	console.log("Servidor Socket.IO e MQTT rodando na porta ", port);
 });
+
+module.exports = io;

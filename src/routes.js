@@ -1,10 +1,15 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-const mqttClient = require(".");
 var pool = require("../main/db");
 const jwtSecret = `Bearer ${process.env.SERVER_SECRET_KEY}`;
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const io = require(".");
+
 router.use(cors());
+
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 function verifyToken(req, next) {
 	const token = req.headers?.authorization;
 
@@ -46,6 +51,26 @@ router.get("/api/equipamentos", (req, res, next) => {
 			error: "Acesso não permitido, credenciais inválidads",
 			status: 401,
 		});
+	}
+});
+const SECRET_KEY = process.env.SERVER_SECRET_KEY;
+router.post("/login", (req, res) => {
+	const { token } = req?.body;
+	console.log(token);
+	if (token === SECRET_KEY) {
+		// Lógica de autenticação, verificar credenciais do usuário, etc.
+		const user = {
+			id: 1,
+			username: "ecoweb",
+		};
+
+		// Gerar token JWT
+		const token = jwt.sign(user, SECRET_KEY);
+
+		// Retornar o token para o cliente
+		res.json({ token });
+	} else {
+		res.json({ error: 401 });
 	}
 });
 
