@@ -56,7 +56,7 @@ router.get("/api/equipamentos", (req, res, next) => {
 const SECRET_KEY = process.env.SERVER_SECRET_KEY;
 router.post("/login", (req, res) => {
 	const { token } = req?.body;
-	console.log(token);
+
 	if (token === SECRET_KEY) {
 		// Lógica de autenticação, verificar credenciais do usuário, etc.
 		const user = {

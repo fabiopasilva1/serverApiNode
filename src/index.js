@@ -45,15 +45,22 @@ io.on("connection", (socket) => {
 	socket.emit("authenticated");
 	console.log(socket.client.id);
 	socket.on("disconnect", () => {
+		socket.emit("unauthorized");
 		console.log(socket.client.id, "Desconectado");
 	});
 	socket.on("subscribeToMqtt", (topic) => {
 		console.log(`Cliente inscrito no tópico MQTT: ${topic}`);
 		mqttClient.subscribe(topic);
 	});
-
+	const uniqueMessages = new Set();
 	mqttClient.on("message", (mqttTopic, message) => {
-		io.emit("mqttMessage", { message: message.toString() });
+		const messageString = message.toString();
+		console.log(messageString);
+		if (!uniqueMessages.has(messageString)) {
+			uniqueMessages.add(messageString);
+			io.emit("mqttMessage", { message: messageString });
+		}
+		console.log(message.toString());
 	});
 });
 
