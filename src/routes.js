@@ -37,7 +37,7 @@ router.get("/api/equipamentos", (req, res, next) => {
 			(orderDirection &&
 				` ORDER BY ${orderBy} ${orderDirection.toUpperCase()}`) ||
 			"";
-
+		console.log(OrderByDirection);
 		if (verify) {
 			pool.query(
 				"SELECT * FROM " + table + " pv " + where + "" + OrderByDirection + "",
