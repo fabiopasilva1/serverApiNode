@@ -33,7 +33,6 @@ io.on("connection", (socket) => {
 	mqttClient.subscribe("ufm/dados/#");
 
 	socket.on("disconnect", () => {
-		mqttClient.unsubscribe("ufm/dados/#");
 		console.log("Cliente desconectou", socket.id);
 		socket.disconnect();
 	});
