@@ -22,7 +22,7 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 			(orderDirection &&
 				` ORDER BY ${orderBy} ${orderDirection.toUpperCase()}`) ||
 			"";
-
+		console.log(table, where, orderBy);
 		pool.query(
 			"SELECT * FROM " + table + " pv " + where + "" + OrderByDirection + "",
 			(err, results) => {
