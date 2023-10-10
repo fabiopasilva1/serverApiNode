@@ -13,10 +13,8 @@ const mqttBrocker = process.env.MQTT_BROKER_HOST || "127.0.0.1";
 const mqttConfig = {
 	username: process.env.MQTT_USERNAME || "",
 	password: process.env.MQTT_PASSWORD || "",
-	clientId: Math.random().toString(16).substring(2, 6),
 };
-// const mqttClient = mqtt.connect(`mqtt://${mqttBrocker}`, mqttConfig);
-const mqttClient = mqtt.connect(`mqtt://localhost:1883`, mqttConfig);
+const mqttClient = mqtt.connect(`mqtt://${mqttBrocker}`, mqttConfig);
 const jwtSecret = process.env.SERVER_SECRET_KEY;
 
 // Middleware para autenticar o token JWT
@@ -50,16 +48,7 @@ io.on("connection", (socket) => {
 		socket.emit("unauthorized");
 		console.log(socket.client.id, "Desconectado");
 	});
-	let lastSubscribedTopic = null;
-
 	socket.on("subscribeToMqtt", (topic) => {
-		if (lastSubscribedTopic) {
-			mqttClient.unsubscribe(lastSubscribedTopic);
-		}
-
-		lastSubscribedTopic = topic;
-		uniqueMessages.clear(); // Limpar mensagens únicas ao se inscrever em um novo tópico
-
 		console.log(`Cliente inscrito no tópico MQTT: ${topic}`);
 		mqttClient.subscribe(topic);
 	});
@@ -89,7 +78,4 @@ server.listen(port, () => {
 	console.log("Servidor Socket.IO e MQTT rodando na porta ", port);
 });
 
-mqttClient.on("equipamento/1", (dados) => {
-	console.log("Dados enviados do equipamento");
-});
 module.exports = io;
