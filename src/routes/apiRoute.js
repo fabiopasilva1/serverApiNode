@@ -30,6 +30,7 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 					console.error("Erro ao executar a consulta:", err);
 					res.status(500).send("Erro ao consultar o banco de dados");
 				} else {
+					console.log(results);
 					res.json(results);
 				}
 			}
