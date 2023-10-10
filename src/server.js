@@ -41,15 +41,17 @@ io.on("connection", (socket) => {
 
 	const uniqueMessages = new Set();
 	mqttClient.on("message", (mqttTopic, message) => {
-		const messageString = message.toString();
-		//console.log(`Mensagem recebida no tópico ${mqttTopic}: ${messageString}`);
+		if (mqttTopic) {
+			const messageString = message.toString();
+			//console.log(`Mensagem recebida no tópico ${mqttTopic}: ${messageString}`);
 
-		if (!uniqueMessages.has(messageString)) {
-			uniqueMessages.add(messageString);
-			io.emit("mqttMessage", { topic: mqttTopic, message: messageString });
-			console.log("Enviando mensagem única via Socket.IO.", socket.id);
-		} else {
-			console.log("Mensagem repetida, ignorando.");
+			if (!uniqueMessages.has(messageString)) {
+				uniqueMessages.add(messageString);
+				io.emit("mqttMessage", { topic: mqttTopic, message: messageString });
+				console.log("Enviando mensagem única via Socket.IO.", socket.id);
+			} else {
+				console.log("Mensagem repetida, ignorando.");
+			}
 		}
 	});
 	socket.on("disconnectSocket", () => {
