@@ -46,7 +46,7 @@ io.on("connection", (socket) => {
 
 		if (!uniqueMessages.has(messageString)) {
 			uniqueMessages.add(messageString);
-			io.emit("mqttMessage", { message: messageString });
+			io.emit("mqttMessage", { message: message });
 			console.log("Enviando mensagem única via Socket.IO.", socket.id);
 		} else {
 			console.log("Mensagem repetida, ignorando.");
@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
 	});
 	socket.on("disconnectSocket", () => {
 		console.log("Disconnecting the socket", socket.id);
-		mqttClient.unsubscribe();
+
 		socket.disconnect();
 	});
 	setInterval(() => {
