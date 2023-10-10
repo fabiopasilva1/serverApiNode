@@ -11,7 +11,7 @@ loginRoute.use(bodyParser.urlencoded({ extended: true }));
 
 loginRoute.post("/", (req, res) => {
 	const { token } = req?.body;
-	console.log(token);
+
 	if (token === SECRET_KEY) {
 		// Lógica de autenticação, verificar credenciais do usuário, etc.
 		const user = {
