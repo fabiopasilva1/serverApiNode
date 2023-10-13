@@ -28,12 +28,16 @@ app.use("/login", loginRoute);
 app.use("/api", apiRoute);
 
 io.use(socketAuthenticateJWT);
-
+const clients = new Set();
 io.on("connection", (socket) => {
+	clients.add(socket.id);
 	mqttClient.subscribe("ufm/dados/#", { qos: 2 });
 
 	socket.on("disconnect", () => {
 		console.log("Cliente desconectou", socket.id);
+		if (clients.has(socket.id)) {
+			clients.delete(socket.id);
+		}
 		socket.disconnect();
 	});
 	console.log("Cliente conectado via Socket.IO", socket.client.id);
@@ -56,9 +60,18 @@ io.on("connection", (socket) => {
 	});
 	socket.on("disconnectSocket", () => {
 		console.log("Disconnecting the socket", socket.id);
-		mqttClient.unsubscribe("ufm/dados/#");
+
 		socket.disconnect();
 	});
+
+	setInterval(() => {
+		if (clients.size === 0) {
+			mqttClient.unsubscribe("ufm/dados/#");
+			console.log("sem clientes");
+		} else {
+			console.log("com clientes", clients.size);
+		}
+	}, 10000);
 
 	setInterval(() => {
 		uniqueMessages.clear();

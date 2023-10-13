@@ -13,6 +13,9 @@ function createPostgresPool() {
 		database: process.env.DB_NAME,
 		password: process.env.DB_PASSWORD,
 		port: process.env.DB_PORT,
+		waitForConnections: true,
+		connectionLimit: 10,
+		queueLimit: 0,
 	});
 }
 
@@ -23,6 +26,9 @@ function createMysqlPool() {
 		database: process.env.DB_NAME,
 		password: process.env.DB_PASSWORD,
 		port: process.env.DB_PORT,
+		waitForConnections: true,
+		connectionLimit: 10,
+		queueLimit: 0,
 	});
 
 	// Adiciona um ouvinte de evento de erro para lidar com desconexões
@@ -31,7 +37,8 @@ function createMysqlPool() {
 		if (
 			err.code === "PROTOCOL_CONNECTION_LOST" ||
 			err.code === "ETIMEDOUT" ||
-			err.code === "ECONNRESET"
+			err.code === "ECONNRESET" ||
+			err.code === "EHOSTUNREACH"
 		) {
 			console.log("Tentando reconectar ao ", driver);
 			// Reconectar em caso de perda de conexão
