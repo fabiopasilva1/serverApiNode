@@ -30,7 +30,7 @@ app.use("/api", apiRoute);
 io.use(socketAuthenticateJWT);
 
 io.on("connection", (socket) => {
-	mqttClient.subscribe("ufm/dados/#");
+	mqttClient.subscribe("ufm/dados/#", { qos: 2 });
 
 	socket.on("disconnect", () => {
 		console.log("Cliente desconectou", socket.id);
@@ -42,6 +42,7 @@ io.on("connection", (socket) => {
 	const uniqueMessages = new Set();
 	mqttClient.on("message", (mqttTopic, message) => {
 		const messageString = message.toString();
+
 		//console.log(`Mensagem recebida no tópico ${mqttTopic}: ${messageString}`);
 
 		if (!uniqueMessages.has(messageString)) {
@@ -55,9 +56,10 @@ io.on("connection", (socket) => {
 	});
 	socket.on("disconnectSocket", () => {
 		console.log("Disconnecting the socket", socket.id);
-
+		mqttClient.unsubscribe("ufm/dados/#");
 		socket.disconnect();
 	});
+
 	setInterval(() => {
 		uniqueMessages.clear();
 	}, 15000);

@@ -23,21 +23,16 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 				` ORDER BY ${orderBy} ${orderDirection.toUpperCase()}`) ||
 			"";
 
-		pool.query(
-			"SELECT * FROM " + table + " pv " + where + "" + OrderByDirection + "",
-			(err, results) => {
-				if (err) {
-					console.error("Erro ao executar a consulta:", err);
-					res.status(500).send("Erro ao consultar o banco de dados");
-				} else {
-					res.json(results);
-					pool.close();
-					process.exit(1, () => {
-						console.log("Connection close success!");
-					});
-				}
-			}
-		);
+		pool
+			.promise()
+			.query(
+				"SELECT * FROM " + table + " pv " + where + "" + OrderByDirection + ""
+			)
+			.then(([rows, fields]) => {
+				res.json(rows);
+			})
+			.catch(console.log)
+			.then(() => {});
 	}
 });
 

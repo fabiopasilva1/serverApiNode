@@ -21,7 +21,7 @@ loginRoute.post("/", (req, res) => {
 
 		// Gerar token JWT
 		const token = jwt.sign(user, SECRET_KEY);
-
+		console.log("Login efetuado com sucesso!");
 		// Retornar o token para o cliente
 		res.json({ token });
 	} else {
