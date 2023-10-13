@@ -71,11 +71,11 @@ io.on("connection", (socket) => {
 		} else {
 			console.log("com clientes", clients.size);
 		}
-	}, 10000);
+	}, 60000);
 
 	setInterval(() => {
 		uniqueMessages.clear();
-	}, 15000);
+	}, 5000);
 });
 
 server.listen(port, () => {
