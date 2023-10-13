@@ -31,8 +31,7 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 			.then(([rows, fields]) => {
 				res.json(rows);
 			})
-			.catch(console.log)
-			.then(() => {});
+			.catch(console.log);
 	}
 });
 
