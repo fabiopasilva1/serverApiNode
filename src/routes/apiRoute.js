@@ -22,7 +22,7 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 			(orderDirection &&
 				` ORDER BY ${orderBy} ${orderDirection.toUpperCase()}`) ||
 			"";
-		console.log(table, where, orderBy);
+
 		pool.query(
 			"SELECT * FROM " + table + " pv " + where + "" + OrderByDirection + "",
 			(err, results) => {
@@ -30,8 +30,11 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 					console.error("Erro ao executar a consulta:", err);
 					res.status(500).send("Erro ao consultar o banco de dados");
 				} else {
-					console.log(results);
 					res.json(results);
+					pool.close();
+					pool.on("close", () => {
+						console.log("Connection close success!");
+					});
 				}
 			}
 		);
