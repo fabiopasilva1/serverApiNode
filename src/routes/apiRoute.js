@@ -32,7 +32,7 @@ apiRoute.get("/equipamentos", (req, res, next) => {
 				} else {
 					res.json(results);
 					pool.close();
-					pool.on("close", () => {
+					process.exit(1, () => {
 						console.log("Connection close success!");
 					});
 				}
